@@ -7,7 +7,18 @@ const prisma = new PrismaClient();
 @Injectable()
 export class AppRepository {
   async getAllMatches(): Promise<Match[]> {
-    return prisma.match.findMany();
+    return prisma.match.findMany({
+      include: {
+        localTeam: {
+          include: { players: true }
+        },
+        visitorTeam: {
+          include: { players: true }
+        },
+        faults: true,
+        anotation: true
+      }
+    });
   }
 
   async createMatch(body: CreateMatchDto): Promise<Match> {
