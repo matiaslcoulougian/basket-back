@@ -32,6 +32,17 @@
 $ yarn install
 ```
 
+## Database
+
+```bash
+# create database
+$ docker-compose up -d
+
+$ yarn db:migrate
+
+$ yarn db:seed
+```
+
 ## Running the app
 
 ```bash

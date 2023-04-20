@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import {AppRepository} from "./app.repository";
-import {User} from "@prisma/client";
+import {Match} from "@prisma/client";
+import {CreateMatchDTO} from "./models/dtos/create.match.dto";
 
 @Injectable()
 export class AppService {
   constructor(private readonly appRepository: AppRepository) {}
-  getUsers(): Promise<User[]> {
-    return this.appRepository.getUsers();
+  async getAllMatches(): Promise<Match[]> {
+    return await this.appRepository.getAllMatches();
+  }
+
+  async createMatch(body: CreateMatchDTO): Promise<Match> {
+    return await this.appRepository.createMatch(body);
   }
 }

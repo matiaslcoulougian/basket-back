@@ -10,18 +10,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int    @id @default(autoincrement())
-  email     String @unique
-  firstName String
-  lastName  String
-  password  String
+model Match {
+  id            String      @id @default(dbgenerated("gen_random_uuid()"))
+  startDate     DateTime
+  location      String
+  localTeamId   String
+  visitorTeamId String
+  localTeam     Team        @relation(name: "local", fields: [localTeamId], references: [id])
+  visitorTeam   Team        @relation(name: "visitor", fields: [visitorTeamId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  faults        Fault[]
+  anotation     Anotation[]
 }
 
-model Game {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Team {
+  id             String    @id @default(dbgenerated("gen_random_uuid()"))
+  name           String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  localMatches   Match[]   @relation("local")
+  visitorMatches Match[]   @relation("visitor")
+  players        Player[]
+}
+
+model Player {
+  id        String      @id @default(dbgenerated("gen_random_uuid()"))
+  name      String
+  teamId    String
+  team      Team        @relation(fields: [teamId], references: [id])
+  Fault     Fault[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt
+  Anotation Anotation[]
+}
+
+model Fault {
+  id        String    @id @default(dbgenerated("gen_random_uuid()"))
+  matchId   String
+  match     Match     @relation(fields: [matchId], references: [id])
+  playerId  String
+  player    Player    @relation(fields: [playerId], references: [id])
+  faultType FaultType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Anotation {
+  id        String    @id @default(dbgenerated("gen_random_uuid()"))
+  points    Int
+  matchId   String
+  match     Match     @relation(fields: [matchId], references: [id])
+  playerId  String
+  player    Player    @relation(fields: [playerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+enum FaultType {
+  YELLOW_CARD
+  RED_CARD
 }
