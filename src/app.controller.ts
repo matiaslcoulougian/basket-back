@@ -7,8 +7,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Fault, Match } from "@prisma/client";
-import { CreateFaultDto, CreateMatchDto } from "./models/dtos";
+import { Anotation, Fault, Match, Player } from "@prisma/client";
+import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 @Controller('api')
 export class AppController {
@@ -32,5 +32,15 @@ export class AppController {
   @Post('match/fault')
   async createFault(@Body() body: CreateFaultDto): Promise<Fault> {
     return await this.appService.createFault(body);
+  }
+
+  @Post('match/annotation')
+  async createAnnotation(@Body() body: CreateAnnotationDto): Promise<Anotation> {
+    return await this.appService.createAnnotation(body);
+  }
+
+  @Get('stats/:playerId')
+  async getPlayerStats(@Param('playerId', ParseUUIDPipe) playerId): Promise<any> {
+    return await this.appService.getPlayerStats(playerId)
   }
 }

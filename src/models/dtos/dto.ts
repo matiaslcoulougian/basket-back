@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min } from "class-validator";
 
 export class CreateMatchDto {
   @IsNotEmpty()
@@ -37,5 +37,20 @@ export class CreateFaultDto {
   @IsEnum(FaultType)
   type: FaultType;
 
+}
+
+export class CreateAnnotationDto {
+  @IsNotEmpty()
+  @IsUUID()
+  matchId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  playerId: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  points: number;
 }
 

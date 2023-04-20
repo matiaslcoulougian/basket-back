@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { AppRepository } from './app.repository';
-import { Match, Fault } from '@prisma/client';
-import { CreateFaultDto, CreateMatchDto } from "./models/dtos";
+import { Match, Fault, Anotation } from '@prisma/client';
+import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 @Injectable()
 export class AppService {
@@ -36,4 +36,34 @@ export class AppService {
     return await this.appRepository.createFault(createFaultDto);
   }
 
+  async createAnnotation(body: CreateAnnotationDto): Promise<Anotation> {
+    const player = await this.appRepository.getPlayer(body.playerId)
+    if(!player) throw new HttpException('player not found', 404);
+
+    const match = await this.appRepository.getMatchById(body.matchId)
+    if(!match) throw new HttpException('match not found', 404)
+
+    return await this.appRepository.createAnnotation(body);
+  }
+
+  async getPlayerStats(playerId: string): Promise<any> {
+    const player = await this.appRepository.getPlayer(playerId)
+    if(!player) throw new HttpException('player not found', 404);
+
+    const matchesCount = await this.appRepository.countPlayerMatches(playerId)
+    const annotations = await this.appRepository.getPlayerAnnotations(playerId)
+    const faultsCount = await this.appRepository.countPlayerFaults(playerId)
+
+    return {
+      matchesPlayed: matchesCount,
+      totalScoring: this.calculateTotalScoring(annotations),
+      faultsCommited: faultsCount
+    }
+  }
+
+  private calculateTotalScoring(annotations: Anotation[]): number {
+    return annotations.reduce((acc, next) => {
+      return acc + next.points
+    }, 0)
+  }
 }

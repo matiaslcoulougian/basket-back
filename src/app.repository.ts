@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Fault, Match, Player, Team, PrismaClient } from "@prisma/client";
-import { CreateFaultDto, CreateMatchDto } from "./models/dtos";
+import { Fault, Match, Player, Team, PrismaClient, Anotation } from "@prisma/client";
+import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 const prisma = new PrismaClient();
 
@@ -57,4 +57,25 @@ export class AppRepository {
     return prisma.team.findFirst({ where: { id: id } })
   }
 
+  async createAnnotation(body: CreateAnnotationDto): Promise<Anotation> {
+    return prisma.anotation.create({
+      data: {
+        matchId: body.matchId,
+        playerId: body.playerId,
+        points: body.points
+      }
+    });
+  }
+
+  async countPlayerMatches(playerId: string): Promise<number> {
+    return Promise.resolve(0)
+  }
+
+  async getPlayerAnnotations(playerId: string): Promise<Anotation[]> {
+    return Promise.resolve([])
+  }
+
+  async countPlayerFaults(playerId: string): Promise<number> {
+    return Promise.resolve(0)
+  }
 }
