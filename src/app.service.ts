@@ -66,4 +66,20 @@ export class AppService {
       return acc + next.points
     }, 0)
   }
+
+  async getAllPlayerStats(): Promise<any[]> {
+    const players = await this.appRepository.getAllPlayers()
+
+    return players.map(async player => {
+      const matchesCount = await this.appRepository.countPlayerMatches(player.id)
+      const annotations = await this.appRepository.getPlayerAnnotations(player.id)
+      const faultsCount = await this.appRepository.countPlayerFaults(player.id)
+
+      return {
+        matchesPlayed: matchesCount,
+        totalScoring: this.calculateTotalScoring(annotations),
+        faultsCommited: faultsCount
+      }
+    })
+  }
 }

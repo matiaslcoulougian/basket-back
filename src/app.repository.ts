@@ -21,6 +21,10 @@ export class AppRepository {
     });
   }
 
+  async getAllPlayers(): Promise<Player[]> {
+    return prisma.player.findMany()
+  }
+
   async createMatch(body: CreateMatchDto): Promise<Match> {
     return prisma.match.create({
       data: {

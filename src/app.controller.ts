@@ -43,4 +43,9 @@ export class AppController {
   async getPlayerStats(@Param('playerId', ParseUUIDPipe) playerId): Promise<any> {
     return await this.appService.getPlayerStats(playerId)
   }
+
+  @Get('stats/all')
+  async getAllPlayerStats(): Promise<any[]> {
+    return await this.appService.getAllPlayerStats()
+  }
 }
