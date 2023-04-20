@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import {AppRepository} from "./app.repository";
-import {Match} from "@prisma/client";
-import {CreateMatchDTO} from "./models/dtos/create.match.dto";
+import { AppRepository } from './app.repository';
+import { Match } from '@prisma/client';
+import { CreateMatchDTO } from './models/dtos';
 
 @Injectable()
 export class AppService {

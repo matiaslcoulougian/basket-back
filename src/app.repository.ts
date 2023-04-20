@@ -1,22 +1,21 @@
-import {Injectable} from "@nestjs/common";
-import {Match, PrismaClient} from "@prisma/client";
-import {CreateMatchDTO} from "./models/dtos/create.match.dto";
+import { Injectable } from '@nestjs/common';
+import { Match, PrismaClient } from '@prisma/client';
+import { CreateMatchDTO } from './models/dtos';
 
-
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 @Injectable()
 export class AppRepository {
-    async getAllMatches(): Promise<Match[]> {
-        return prisma.match.findMany();
-    }
+  async getAllMatches(): Promise<Match[]> {
+    return prisma.match.findMany();
+  }
 
-    async createMatch(body: CreateMatchDTO): Promise<Match> {
-        return prisma.match.create({
-            data: {
-                ...body,
-                startDate: new Date(body.startDate)
-            }
-        });
-    }
+  async createMatch(body: CreateMatchDTO): Promise<Match> {
+    return prisma.match.create({
+      data: {
+        ...body,
+        startDate: new Date(body.startDate),
+      },
+    });
+  }
 }
