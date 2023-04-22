@@ -39,13 +39,14 @@ export class AppController {
     return await this.appService.createAnnotation(body);
   }
 
-  @Get('stats/:playerId')
-  async getPlayerStats(@Param('playerId', ParseUUIDPipe) playerId): Promise<any> {
-    return await this.appService.getPlayerStats(playerId)
-  }
-
   @Get('stats/all')
   async getAllPlayerStats(): Promise<any[]> {
     return await this.appService.getAllPlayerStats()
+  }
+
+
+  @Get('stats/:playerId')
+  async getPlayerStats(@Param('playerId', ParseUUIDPipe) playerId): Promise<any> {
+    return await this.appService.getPlayerStats(playerId)
   }
 }
