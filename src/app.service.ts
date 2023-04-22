@@ -15,7 +15,7 @@ export class AppService {
   }
 
   async createMatch(body: CreateMatchDto): Promise<Match> {
-    if(body.startDate < (new Date())) throw new HttpException('Start date has already passed', 409);
+    if(new Date(body.startDate) < (new Date())) throw new HttpException('Start date has already passed', 400);
 
     const localTeam = await this.appRepository.getTeam(body.localTeamId)
     const visitantTeam = await this.appRepository.getTeam(body.localTeamId)
