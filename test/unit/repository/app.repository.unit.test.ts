@@ -2,22 +2,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {AppRepository} from "../../../src/app.repository";
 import {CreateMatchDto} from "../../../src/models/dtos";
 import {PrismaClient} from "@prisma/client";
+import {PrismaCleaner} from "../../utils/prisma.cleaner";
 
 describe('AppRepository', () => {
     let appRepository: AppRepository;
-    const prisma = new PrismaClient();
+    let prisma: PrismaClient;
 
-    beforeEach(async () => {
-        await prisma.match.deleteMany();
+    beforeAll(async () => {
         const app: TestingModule = await Test.createTestingModule({
             controllers: [AppRepository]
         }).compile();
 
         appRepository = app.get<AppRepository>(AppRepository);
+
+        prisma = new PrismaClient();
     });
 
-    afterEach(async () => {
-        await prisma.match.deleteMany();
+    beforeEach(async () => {
+        await PrismaCleaner.clean(prisma);
     });
 
     it('Create match with all params required should write to DB a new match', async () => {

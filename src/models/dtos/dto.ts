@@ -1,8 +1,8 @@
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min } from "class-validator";
+import {IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min} from "class-validator";
 
 export class CreateMatchDto {
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   startDate: Date;
 
   @IsNotEmpty()
