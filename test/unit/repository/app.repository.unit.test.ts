@@ -3,6 +3,7 @@ import {AppRepository} from "../../../src/app.repository";
 import {CreateMatchDto} from "../../../src/models/dtos";
 import {PrismaClient} from "@prisma/client";
 import {PrismaCleaner} from "../../utils/prisma.cleaner";
+import { getCreateMatchInput } from "../../utils/fixture/match.fixture";
 
 describe('AppRepository', () => {
     let appRepository: AppRepository;
@@ -23,13 +24,8 @@ describe('AppRepository', () => {
     });
 
     it('Create match with all params required should write to DB a new match', async () => {
-        const teams = await prisma.team.findMany()
-        const createMatchInput: CreateMatchDto = {
-            localTeamId: teams[0].id,
-            visitorTeamId: teams[1].id,
-            startDate: new Date(),
-            location: "Test Location"
-        }
+        const createMatchInput: CreateMatchDto = await getCreateMatchInput(prisma)
+
         const match = await appRepository.createMatch(createMatchInput);
         expect(match).toEqual({
             id: expect.any(String),
