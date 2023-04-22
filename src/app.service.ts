@@ -1,11 +1,15 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { AppRepository } from './app.repository';
+import { IAppRepository } from "./app.repository";
 import { Match, Fault, Anotation } from '@prisma/client';
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 @Injectable()
 export class AppService {
-  constructor(private readonly appRepository: AppRepository) {}
+
+  constructor(
+    private readonly appRepository: IAppRepository
+  ) {}
+
   async getAllMatches(): Promise<Match[]> {
     return await this.appRepository.getAllMatches();
   }

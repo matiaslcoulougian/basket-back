@@ -4,8 +4,24 @@ import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dt
 
 const prisma = new PrismaClient();
 
+export abstract class IAppRepository {
+  abstract getAllMatches(): Promise<Match[]>
+  abstract getAllPlayers(): Promise<Player[]>
+  abstract createMatch(body: CreateMatchDto): Promise<Match>
+  abstract getMatch(matchId: string): Promise<Match>
+  abstract createFault(createFaultDto: CreateFaultDto): Promise<Fault>
+  abstract getPlayer(id: string): Promise<Player>
+  abstract getMatchById(id: string): Promise<Match>
+  abstract getTeam(id: string): Promise<Team>
+  abstract createAnnotation(body: CreateAnnotationDto): Promise<Anotation>
+  abstract countPlayerMatches(playerId: string): Promise<number>
+  abstract getPlayerAnnotations(playerId: string): Promise<Anotation[]>
+  abstract countPlayerFaults(playerId: string): Promise<number>
+}
+
+
 @Injectable()
-export class AppRepository {
+export class AppRepository implements IAppRepository {
   async getAllMatches(): Promise<Match[]> {
     return prisma.match.findMany({
       include: {
