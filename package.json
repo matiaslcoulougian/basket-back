@@ -19,9 +19,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
-    "pre-test": "docker-compose -f docker-compose-test.yml up -d && dotenv -e .env.test -- prisma migrate dev && dotenv -e .env.test -- prisma db seed",
+    "db:test:seed": "dotenv -e .env.test -- prisma db seed",
+    "pre-test": "docker-compose -f docker-compose-test.yml up -d && dotenv -e .env.test -- prisma migrate dev",
     "post-test": "docker-compose -f docker-compose-test.yml stop",
-    "test": "yarn pre-test && dotenv -e .env.test -- jest && yarn post-test"
+    "test:integration": "yarn pre-test && dotenv -e .env.test -- jest integration && yarn post-test",
+    "test:unit": "yarn pre-test && dotenv -e .env.test -- jest unit && yarn post-test"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
