@@ -67,11 +67,9 @@ describe('Create match', () => {
       localTeamId: '123',
       visitorTeamId: '456',
     };
-    const currentDate = new Date('2023-01-01');
-    jest.spyOn(global, 'Date').mockImplementation(() => currentDate as any);
 
     await expect(appService.createMatch(createMatchDto)).rejects.toThrowError(
-      new HttpException('Start date has already passed', 409),
+      new HttpException('Start date has already passed', 400),
     );
   });
 
