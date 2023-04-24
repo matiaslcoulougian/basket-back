@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Fault, Match, Team, PrismaClient, Anotation } from "@prisma/client";
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 import {Player} from "./models/entities/player.entity";
-import Prisma from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export abstract class IAppRepository {
   abstract getAllMatches(): Promise<Match[]>
-  abstract getAllPlayers(): Promise<Prisma.Player[]>
+  abstract getAllPlayers(): Promise<Player[]>
   abstract createMatch(body: CreateMatchDto): Promise<Match>
   abstract getMatch(matchId: string): Promise<Match>
   abstract createFault(createFaultDto: CreateFaultDto): Promise<Fault>
@@ -39,8 +38,8 @@ export class AppRepository implements IAppRepository {
     });
   }
 
-  async getAllPlayers(): Promise<Prisma.Player[]> {
-    return prisma.player.findMany()
+  async getAllPlayers(): Promise<Player[]> {
+    return prisma.player.findMany({select: {id: true, teamId: true, name: true, team: true, createdAt: true, updatedAt: true}})
   }
 
   async createMatch(body: CreateMatchDto): Promise<Match> {
