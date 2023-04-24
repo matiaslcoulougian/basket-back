@@ -61,7 +61,9 @@ export class AppService {
     return {
       matchesPlayed: matchesCount,
       totalScoring: this.calculateTotalScoring(annotations),
-      faultsCommited: faultsCount
+      faultsCommited: faultsCount,
+      name: player.name,
+      teamName: player.team.name
     }
   }
 
