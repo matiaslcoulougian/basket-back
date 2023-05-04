@@ -18,6 +18,7 @@ export abstract class IAppRepository {
   abstract countPlayerMatches(playerId: string): Promise<number>
   abstract getPlayerAnnotations(playerId: string): Promise<Anotation[]>
   abstract countPlayerFaults(playerId: string): Promise<number>
+  abstract getAllTeams(): Promise<Team[]>
 }
 
 
@@ -109,5 +110,9 @@ export class AppRepository implements IAppRepository {
 
   async countPlayerFaults(playerId: string): Promise<number> {
     return Promise.resolve(0)
+  }
+
+  async getAllTeams(): Promise<Team[]> {
+      return prisma.team.findMany({select: {id: true, name: true, createdAt: true, updatedAt: true}})
   }
 }

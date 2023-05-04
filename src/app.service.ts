@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { IAppRepository } from "./app.repository";
-import { Match, Fault, Anotation } from '@prisma/client';
+import {Match, Fault, Anotation, Team} from '@prisma/client';
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 @Injectable()
@@ -93,4 +93,8 @@ export class AppService {
       })
     )
   }
+
+    async getAllTeams() : Promise<Team[]> {
+      return await this.appRepository.getAllTeams()
+    }
 }

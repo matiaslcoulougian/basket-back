@@ -17,6 +17,7 @@ const mockRepository = {
   countPlayerMatches: jest.fn(),
   getPlayerAnnotations: jest.fn(),
   countPlayerFaults: jest.fn(),
+  getAllTeams: jest.fn(),
 }
 
 const appService = new AppService(mockRepository)
@@ -251,7 +252,7 @@ describe('getPlayerStats', () => {
   ];
   const playerMatchesCount = 5;
   const playerFaultsCount = 2;
-  const mockPlayer = { id: playerId, name: 'Player 1', team: "some team" };
+  const mockPlayer = { id: playerId, team: "some team" };
 
   beforeEach(() => {
     mockRepository.getPlayer.mockResolvedValue(mockPlayer);
