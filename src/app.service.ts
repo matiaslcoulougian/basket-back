@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { IAppRepository } from "./app.repository";
-import { Fault, Anotation } from '@prisma/client';
+import { Fault, Anotation, Team} from '@prisma/client';
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 import { Match } from "./models/entities/match.entity";
 
@@ -29,8 +29,6 @@ export class AppService {
   }
 
   async createMatch(body: CreateMatchDto): Promise<Match> {
-    console.log(new Date(body.startDate))
-    console.log(new Date())
     if(new Date(body.startDate) < (new Date())) throw new HttpException('Start date has already passed', 400);
 
     const localTeam = await this.appRepository.getTeam(body.localTeamId)
@@ -113,4 +111,8 @@ export class AppService {
       })
     )
   }
+
+    async getAllTeams() : Promise<Team[]> {
+      return await this.appRepository.getAllTeams()
+    }
 }
