@@ -95,7 +95,9 @@ describe('API e2e test suite', () => {
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      startDate: matchInput.startDate.toISOString()
+      startDate: matchInput.startDate.toISOString(),
+      localTeamScore: 0,
+      visitorTeamScore: 0
     });
   });
 });

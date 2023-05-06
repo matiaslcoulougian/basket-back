@@ -7,7 +7,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Anotation, Fault, Match, Player } from "@prisma/client";
+import { Anotation, Fault } from "@prisma/client";
+import { Match } from "./models/entities/match.entity";
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 
 @Controller('api')

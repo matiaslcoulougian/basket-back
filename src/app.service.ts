@@ -1,7 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { IAppRepository } from "./app.repository";
-import { Match, Fault, Anotation } from '@prisma/client';
+import { Fault, Anotation } from '@prisma/client';
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
+import { Match } from "./models/entities/match.entity";
 
 @Injectable()
 export class AppService {
@@ -11,22 +12,39 @@ export class AppService {
   ) {}
 
   async getAllMatches(): Promise<Match[]> {
-    return await this.appRepository.getAllMatches();
+    const matches = await this.appRepository.getAllMatches();
+    for (const match of matches) this.addScores(match);
+    return matches;
+  }
+
+  private addScores(match: Match) {
+    match.localTeamScore = 0;
+    match.visitorTeamScore = 0;
+    const localTeamPlayerIds = match.localTeam.players.map(player => player.id)
+    const visitorTeamPlayerIds = match.visitorTeam.players.map(player => player.id)
+    for (const anotation of match.anotation) {
+      if (localTeamPlayerIds.includes(anotation.playerId)) match.localTeamScore += anotation.points;
+      else if (visitorTeamPlayerIds.includes(anotation.playerId)) match.visitorTeamScore += anotation.points
+    }
   }
 
   async createMatch(body: CreateMatchDto): Promise<Match> {
+    console.log(new Date(body.startDate))
+    console.log(new Date())
     if(new Date(body.startDate) < (new Date())) throw new HttpException('Start date has already passed', 400);
 
     const localTeam = await this.appRepository.getTeam(body.localTeamId)
     const visitantTeam = await this.appRepository.getTeam(body.localTeamId)
     if(!localTeam || !visitantTeam) throw new HttpException('team not found', 404)
 
-    return await this.appRepository.createMatch(body);
+    const match = await this.appRepository.createMatch(body);
+    return {...match, localTeamScore: 0, visitorTeamScore:  0};
   }
 
   async getMatch(matchId: string): Promise<Match> {
     const match = await this.appRepository.getMatch(matchId);
     if (!match) throw new HttpException('match not found', 404);
+    this.addScores(match);
     return match;
   }
 
@@ -46,6 +64,8 @@ export class AppService {
 
     const match = await this.appRepository.getMatchById(body.matchId)
     if(!match) throw new HttpException('match not found', 404)
+
+    if (![match.localTeamId, match.visitorTeamId].includes(player.teamId)) throw new HttpException('player is not part of a team playing the match', 400);
 
     return await this.appRepository.createAnnotation(body);
   }

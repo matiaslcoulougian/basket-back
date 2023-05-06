@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Fault, Match, Team, PrismaClient, Anotation } from "@prisma/client";
+import { Fault, Team, PrismaClient, Anotation } from "@prisma/client";
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 import {Player} from "./models/entities/player.entity";
+import {Match} from "./models/entities/match.entity";
 
 const prisma = new PrismaClient();
 
@@ -82,7 +83,19 @@ export class AppRepository implements IAppRepository {
   }
 
   async getMatchById(id: string): Promise<Match> {
-    return prisma.match.findFirst({ where: { id: id } })
+    return prisma.match.findFirst({ where: { id: id },  include: {
+      localTeam: {
+        include: {
+          players: true
+        }
+      },
+      visitorTeam: {
+        include: {
+          players: true
+        }
+        },
+      }
+    })
   }
 
   async getTeam(id: string): Promise<Team> {

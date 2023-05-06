@@ -2,59 +2,34 @@ import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto, FaultType } from "
 import { AppService } from "../../../src/app.service";
 import { Match } from "@prisma/client";
 import { HttpException } from "@nestjs/common";
-
-
-const mockRepository = {
-  getAllMatches: jest.fn(),
-  getAllPlayers: jest.fn(),
-  createMatch: jest.fn(),
-  getMatch: jest.fn(),
-  createFault: jest.fn(),
-  getPlayer: jest.fn(),
-  getMatchById: jest.fn(),
-  getTeam: jest.fn(),
-  createAnnotation: jest.fn(),
-  countPlayerMatches: jest.fn(),
-  getPlayerAnnotations: jest.fn(),
-  countPlayerFaults: jest.fn(),
-}
-
-const appService = new AppService(mockRepository)
+import {
+  getAnnotationMock,
+  getFaultMock,
+  getMatchMock,
+  getPlayerMock,
+  getTeamMock,
+  mockRepository
+} from "../../utils/mocks/repository.mock";
+import {getStartDate} from "../../utils/fixture/match.fixture";
 
 describe('Create match', () => {
+  let appService: AppService;
+
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
+  });
 
   it('Create match should return new match', async () => {
-    const team1 = {
-      id: "some id 1",
-      name: "1",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-    const team2 = {
-      id: "some id 2",
-      name: "2",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
     const body: CreateMatchDto = {
-      startDate: new Date(),
-      location: "miami",
-      localTeamId: "some id 1",
-      visitorTeamId: "some id 2",
-    }
-    const match: Match = {
-      id: "match id",
-      startDate: body.startDate,
-      location: "miami",
-      localTeamId: "some id 1",
-      visitorTeamId: "some id 2",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      startDate: getStartDate(),
+      location: "Miami Beach, FL",
+      localTeamId: "id1",
+      visitorTeamId: "id2",
     }
     mockRepository.getTeam.mockImplementation((id: string) => {
-      if (id === "some id 1") return Promise.resolve(team1)
-      else Promise.resolve(team2)
+      return Promise.resolve(getTeamMock(`Team ${id}`));
     })
+    const match: Match = getMatchMock(body.startDate, body.localTeamId, body.visitorTeamId);
     mockRepository.createMatch.mockImplementation(() => Promise.resolve(match));
     const output = await appService.createMatch(body)
     expect(output).toEqual(match)
@@ -108,6 +83,11 @@ describe('Create match', () => {
 
 
 describe('createFault', () => {
+  let appService: AppService;
+
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
+  });
 
   afterEach(() => {
     mockRepository.createFault.mockClear()
@@ -120,17 +100,9 @@ describe('createFault', () => {
   };
 
   it('should create a fault and return it', async () => {
-    const mockFault = { id: 'fault1', ...createFaultDto };
-    const mockPlayer = { id: 'player1', name: 'player1', team: "some team" };
-    const mockMatch = {
-      id: "match id",
-      startDate: new Date(),
-      location: "miami",
-      localTeamId: "some id 1",
-      visitorTeamId: "some id 2",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+    const mockFault = getFaultMock("player1", "match1", FaultType.YELLOW_CARD);
+    const mockPlayer = getPlayerMock("player1", "team1", "Team 1");
+    const mockMatch = getMatchMock(new Date(), "team1", "team2");
 
     mockRepository.createFault.mockResolvedValue(mockFault);
     mockRepository.getPlayer.mockResolvedValue(mockPlayer);
@@ -166,6 +138,12 @@ describe('createFault', () => {
 
 describe('createAnnotation', () => {
 
+  let appService: AppService;
+
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
+  });
+
   afterEach(() => {
     mockRepository.createAnnotation.mockClear()
   })
@@ -177,17 +155,9 @@ describe('createAnnotation', () => {
   };
 
   it('should create an annotation and return it', async () => {
-    const mockAnnotation = { id: 'annotation1', ...createAnnotationDto };
-    const mockPlayer = { id: 'player1', name: 'player1', team: "some team" };
-    const mockMatch = {
-      id: "match id",
-      startDate: new Date(),
-      location: "miami",
-      localTeamId: "some id 1",
-      visitorTeamId: "some id 2",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+    const mockAnnotation = getAnnotationMock(3, "player1", "match1");
+    const mockPlayer = getPlayerMock("player1", "team1", "Team 1");
+    const mockMatch = getMatchMock(new Date(), "team1", "team2" )
 
     mockRepository.createAnnotation.mockResolvedValue(mockAnnotation);
     mockRepository.getPlayer.mockResolvedValue(mockPlayer);
@@ -223,6 +193,12 @@ describe('createAnnotation', () => {
 
 describe('calculateTotalScoring', () => {
 
+  let appService: AppService;
+
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
+  });
+
   it('should return 0 if no annotations are provided', () => {
     const annotations = [];
     const result = appService.calculateTotalScoring(annotations);
@@ -230,34 +206,25 @@ describe('calculateTotalScoring', () => {
   });
 
   it('should return the total scoring based on the annotations provided', () => {
+    const playerId = 'player1';
     const annotations = [
-      { id: 'annotation1', playerId: 'player1', matchId: 'match1', points: 2, createdAt: new Date(), updatedAt: new Date() },
-      { id: 'annotation2', playerId: 'player1', matchId: 'match2', points: 1, createdAt: new Date(), updatedAt: new Date()  },
-      { id: 'annotation3', playerId: 'player1', matchId: 'match3', points: 3, createdAt: new Date(), updatedAt: new Date() },
+     getAnnotationMock(2, playerId, "match1"),
+      getAnnotationMock(2, playerId, "match2"),
+      getAnnotationMock(3, playerId, "match3"),
     ];
+    const totalScore = annotations.reduce((acc, annotation) => acc + annotation.points, 0)
 
     const result = appService.calculateTotalScoring(annotations);
 
-    expect(result).toEqual(6);
+    expect(result).toEqual(totalScore);
   });
 });
 
 describe('getPlayerStats', () => {
-  const playerId = 'player1';
-  const playerAnnotations = [
-    { id: 'annotation1', playerId: playerId, matchId: 'match1', points: 2, createdAt: new Date(), updatedAt: new Date() },
-    { id: 'annotation2', playerId: playerId, matchId: 'match2', points: 1, createdAt: new Date(), updatedAt: new Date()  },
-    { id: 'annotation3', playerId: playerId, matchId: 'match3', points: 3, createdAt: new Date(), updatedAt: new Date() },
-  ];
-  const playerMatchesCount = 5;
-  const playerFaultsCount = 2;
-  const mockPlayer = { id: playerId, name: 'Player 1', team: "some team" };
+  let appService: AppService;
 
-  beforeEach(() => {
-    mockRepository.getPlayer.mockResolvedValue(mockPlayer);
-    mockRepository.countPlayerMatches.mockResolvedValue(playerMatchesCount);
-    mockRepository.countPlayerFaults.mockResolvedValue(playerFaultsCount);
-    mockRepository.getPlayerAnnotations.mockResolvedValue(playerAnnotations);
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
   });
 
   afterEach(() => {
@@ -265,24 +232,41 @@ describe('getPlayerStats', () => {
   });
 
   it('should return player stats', async () => {
+    const playerId = 'player1';
+    const playerAnnotations = [
+      getAnnotationMock(3, playerId, "match1"),
+      getAnnotationMock(3, playerId, "match2"),
+      getAnnotationMock(3, playerId, "match3"),
+    ];
+    const totalScoring = playerAnnotations.reduce((acc, annotation) => acc + annotation.points, 0)
+    const playerMatchesCount = 5;
+    const playerFaultsCount = 2;
+    const mockPlayer = getPlayerMock( 'Player 1', "team1", "some team")
+
+    mockRepository.getPlayer.mockResolvedValue(mockPlayer);
+    mockRepository.countPlayerMatches.mockResolvedValue(playerMatchesCount);
+    mockRepository.countPlayerFaults.mockResolvedValue(playerFaultsCount);
+    mockRepository.getPlayerAnnotations.mockResolvedValue(playerAnnotations);
+
     const result = await appService.getPlayerStats(playerId);
 
-    expect(mockRepository.getPlayer).toHaveBeenCalledWith(playerId);
-    expect(mockRepository.countPlayerMatches).toHaveBeenCalledWith(playerId);
-    expect(mockRepository.getPlayerAnnotations).toHaveBeenCalledWith(playerId);
-    expect(mockRepository.countPlayerFaults).toHaveBeenCalledWith(playerId);
+    expect(mockRepository.countPlayerMatches).toHaveBeenCalled();
+    expect(mockRepository.getPlayerAnnotations).toHaveBeenCalled();
+    expect(mockRepository.countPlayerFaults).toHaveBeenCalled();
 
     expect(result).toEqual({
       matchesPlayed: playerMatchesCount,
-      totalScoring: 6,
+      totalScoring: totalScoring,
       faultsCommited: playerFaultsCount,
+      name: mockPlayer.name,
+      teamName: mockPlayer.team.name,
     });
   });
 
   it('should throw HttpException if player is not found', async () => {
     jest.spyOn(mockRepository, 'getPlayer').mockResolvedValue(undefined);
 
-    await expect(appService.getPlayerStats(playerId)).rejects.toThrowError(
+    await expect(appService.getPlayerStats("testId")).rejects.toThrowError(
       new HttpException('player not found', 404),
     );
 
@@ -293,11 +277,11 @@ describe('getPlayerStats', () => {
 });
 
 describe('getAllPlayerStats', () => {
-  const playerIds = ['player1', 'player2'];
-  const playersAnnotations = [    { id: 'annotation1', playerId: 'player1', matchId: 'match1', points: 2, createdAt: new Date(), updatedAt: new Date() },    { id: 'annotation2', playerId: 'player1', matchId: 'match2', points: 1, createdAt: new Date(), updatedAt: new Date()  },    { id: 'annotation3', playerId: 'player2', matchId: 'match3', points: 3, createdAt: new Date(), updatedAt: new Date() },  ];
-  const playersMatchesCount = [5, 3];
-  const playersFaultsCount = [2, 1];
-  const mockPlayers = [    { id: 'player1', name: 'Player 1', team: "some team" },    { id: 'player2', name: 'Player 2', team: "some team" },  ];
+  let appService: AppService;
+
+  beforeAll(() => {
+    appService = new AppService(mockRepository);
+  });
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -310,13 +294,22 @@ describe('getAllPlayerStats', () => {
   });
 
   it('should return all players stats', async () => {
-    mockRepository.getAllPlayers.mockResolvedValue(Promise.resolve(mockPlayers))
+    const players = [getPlayerMock("Player 1", "team1", "Team 1"), getPlayerMock("Player 2", "team2", "Team 2")];
+    const playersAnnotations = [
+        getAnnotationMock(3, players[0].id, "match1"),
+     getAnnotationMock(3, players[0].id, "match2"),
+      getAnnotationMock(3, players[1].id, "match2"),
+    ];
+    const playersMatchesCount = [5, 3];
+    const playersFaultsCount = [2, 1];
+
+    mockRepository.getAllPlayers.mockResolvedValue(Promise.resolve(players))
     mockRepository.countPlayerMatches.mockImplementation((id: string) => {
-      if(id === playerIds[0]) return Promise.resolve(playersMatchesCount[0])
+      if(id === players[0].id) return Promise.resolve(playersMatchesCount[0])
       else return Promise.resolve(playersMatchesCount[1])
     });
     mockRepository.countPlayerFaults.mockImplementation((id: string) => {
-      if(id === playerIds[0]) return Promise.resolve(playersFaultsCount[0])
+      if(id === players[0].id) return Promise.resolve(playersFaultsCount[0])
       else return Promise.resolve(playersFaultsCount[1])
     });
     mockRepository.getPlayerAnnotations.mockImplementation((id: string) => {
@@ -327,15 +320,17 @@ describe('getAllPlayerStats', () => {
 
     expect(result).toEqual([
       {
-        id: 'player1',
-        name: 'Player 1',
+        id: players[0].id,
+        name: players[0].name,
         matchesPlayed: playersMatchesCount[0],
-        totalScoring: 3,
+        totalScoring: 6,
+        teamName: players[0].team.name,
         faultsCommited: playersFaultsCount[0],
       },
       {
-        id: 'player2',
-        name: 'Player 2',
+        id: players[1].id,
+        name: players[1].name,
+        teamName: players[1].team.name,
         matchesPlayed: playersMatchesCount[1],
         totalScoring: 3,
         faultsCommited: playersFaultsCount[1],

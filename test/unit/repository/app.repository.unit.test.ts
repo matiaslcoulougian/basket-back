@@ -25,7 +25,6 @@ describe('AppRepository', () => {
 
     it('Create match with all params required should write to DB a new match', async () => {
         const createMatchInput: CreateMatchDto = await getCreateMatchInput(prisma)
-
         const match = await appRepository.createMatch(createMatchInput);
         expect(match).toEqual({
             id: expect.any(String),
