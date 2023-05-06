@@ -14,6 +14,7 @@ export const mockRepository = {
     countPlayerMatches: jest.fn(),
     getPlayerAnnotations: jest.fn(),
     countPlayerFaults: jest.fn(),
+    getAllTeams: jest.fn()
 }
 
 export const getTeamMock = (name: string) => {
