@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
   postgres-db:
@@ -7,3 +7,18 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+  app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+        - "8080:8080"
+    env_file:
+        - .env
+
+
+#docker-compose --compatibility up -d

@@ -56,6 +56,13 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
+## Run the app with docker-compose
+
+```bash
+# development
+$ docker-compose --compatibility up -d
+```
+
 ## Test
 
 ```bash
