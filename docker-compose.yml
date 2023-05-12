@@ -11,6 +11,8 @@ services:
       resources:
         limits:
           memory: 1024M
+    volumes:
+      - ./data:/var/lib/postgresql/data
   app:
     build:
         context: .
@@ -19,6 +21,7 @@ services:
         - "8080:8080"
     env_file:
         - .env
+
 
 
 #docker-compose --compatibility up -d

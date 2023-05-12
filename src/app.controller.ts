@@ -20,6 +20,12 @@ export class AppController {
     return await this.appService.getAllMatches();
   }
 
+
+  @Get('match/previous-season')
+  async getPreviousSeason(): Promise<any[]> {
+    return await this.appService.getPreviousSeasonMatches()
+  }
+
   @Post('match')
   async createMatch(@Body() body: CreateMatchDto): Promise<Match> {
     return await this.appService.createMatch(body);

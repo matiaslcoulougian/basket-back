@@ -3,12 +3,14 @@ import { IAppRepository } from "./app.repository";
 import { Fault, Anotation, Team} from '@prisma/client';
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
 import { Match } from "./models/entities/match.entity";
+import BallDontLieIntegration from "./integration/ball.dont.lie.integration";
 
 @Injectable()
 export class AppService {
 
   constructor(
-    private readonly appRepository: IAppRepository
+    private readonly appRepository: IAppRepository,
+    private readonly basketApiIntegration: BallDontLieIntegration
   ) {}
 
   async getAllMatches(): Promise<Match[]> {
@@ -114,5 +116,9 @@ export class AppService {
 
     async getAllTeams() : Promise<Team[]> {
       return await this.appRepository.getAllTeams()
+    }
+
+    async getPreviousSeasonMatches() {
+        return await this.basketApiIntegration.getPreviousSeasonMatches()
     }
 }
