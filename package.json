@@ -24,7 +24,10 @@
     "post-test": "docker-compose -f docker-compose-test.yml down -v",
     "test:integration": "yarn pre-test && dotenv -e .env.test -- jest integration && yarn post-test",
     "test:unit": "yarn pre-test && dotenv -e .env.test -- jest unit && yarn post-test",
-    "test": "yarn test:unit && yarn test:integration"
+    "test": "yarn test:unit && yarn test:integration",
+    "db:stress-test:seed": "dotenv -e .env.stress.test -- prisma db seed",
+    "stress:test": "docker-compose -f docker-compose-stress-test.yml up -d && sleep 1 && dotenv -e .env.stress.test -- prisma migrate dev && yarn db:stress-test:seed",
+    "stress:post-test": "docker-compose -f docker-compose-stress-test.yml down -v"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
