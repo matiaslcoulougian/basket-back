@@ -5,6 +5,8 @@ import { AppModule } from '../../src/app.module';
 import {PrismaClient} from "@prisma/client";
 import {PrismaCleaner} from "../utils/prisma.cleaner";
 import {getCreateMatchInput} from "../utils/fixture/match.fixture";
+import BallDontLieIntegration from "../../src/integration/ball.dont.lie.integration";
+import {basketApiMock} from "../utils/mocks/basket.api.mock";
 
 describe('API e2e test suite', () => {
   let app: INestApplication;
@@ -100,4 +102,16 @@ describe('API e2e test suite', () => {
       visitorTeamScore: 0
     });
   });
+
+    it('/match/previous-season (GET) - get previous season matches returns matches successfully', async () => {
+      const previousSeasonMatches = await basketApiMock.getPreviousSeasonMatches();
+      jest.spyOn(BallDontLieIntegration.prototype, 'getPreviousSeasonMatches').mockResolvedValue(previousSeasonMatches);
+
+      const response = await request(app.getHttpServer())
+          .get('/api/match/previous-season')
+          .send()
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(previousSeasonMatches);
+    });
 });

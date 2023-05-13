@@ -8,15 +8,17 @@ import {
   getMatchMock,
   getPlayerMock,
   getTeamMock,
-  mockRepository
+  mockRepository,
+
 } from "../../utils/mocks/repository.mock";
 import {getStartDate} from "../../utils/fixture/match.fixture";
+import {basketApiMock} from "../../utils/mocks/basket.api.mock";
 
 describe('Create match', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository, basketApiMock);
   });
 
   it('Create match should return new match', async () => {
@@ -86,7 +88,7 @@ describe('createFault', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository,basketApiMock);
   });
 
   afterEach(() => {
@@ -141,7 +143,7 @@ describe('createAnnotation', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository, basketApiMock);
   });
 
   afterEach(() => {
@@ -196,7 +198,7 @@ describe('calculateTotalScoring', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository, basketApiMock);
   });
 
   it('should return 0 if no annotations are provided', () => {
@@ -224,7 +226,7 @@ describe('getPlayerStats', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository, basketApiMock);
   });
 
   afterEach(() => {
@@ -280,7 +282,7 @@ describe('getAllPlayerStats', () => {
   let appService: AppService;
 
   beforeAll(() => {
-    appService = new AppService(mockRepository);
+    appService = new AppService(mockRepository, basketApiMock);
   });
 
   afterEach(() => {
