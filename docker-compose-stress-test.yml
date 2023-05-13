@@ -9,6 +9,10 @@ services:
       POSTGRES_PASSWORD: test
     ports:
       - "5435:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
   api:
     build:
       context: .
