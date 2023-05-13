@@ -4,14 +4,16 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Post,
-} from '@nestjs/common';
+  Post, UseGuards
+} from "@nestjs/common";
 import { AppService } from './app.service';
 import { Anotation, Fault } from "@prisma/client";
 import { Match } from "./models/entities/match.entity";
 import { CreateAnnotationDto, CreateFaultDto, CreateMatchDto } from "./models/dtos";
+import { LoggerGuard } from "./logger.guard";
 
 @Controller('api')
+@UseGuards(LoggerGuard)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 

@@ -15,7 +15,7 @@ export default class BallDontLieIntegration {
         }
         catch (e) {
             console.error(e)
-            throw new HttpException("Error getting previous season matches", 404);
+            throw new HttpException("Error getting previous season matches", 409);
         }
     }
 }

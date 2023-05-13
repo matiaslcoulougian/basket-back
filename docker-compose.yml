@@ -21,7 +21,12 @@ services:
         - "8080:8080"
     env_file:
         - .env
-
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    depends_on:
+      - postgres-db
 
 
 #docker-compose --compatibility up -d
