@@ -114,15 +114,15 @@ export class AppRepository implements IAppRepository {
   }
 
   async countPlayerMatches(playerId: string): Promise<number> {
-    return prisma.match.count({ where: { OR: [{ localTeamId: playerId }, { visitorTeamId: playerId }] } })
+    return Promise.resolve(0)
   }
 
   async getPlayerAnnotations(playerId: string): Promise<Anotation[]> {
-    return prisma.anotation.findMany({ where: { playerId: playerId } })
+    return Promise.resolve([])
   }
 
   async countPlayerFaults(playerId: string): Promise<number> {
-    return prisma.fault.count({ where: { playerId: playerId } })
+    return Promise.resolve(0)
   }
 
   async getAllTeams(): Promise<Team[]> {
